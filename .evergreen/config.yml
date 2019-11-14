@@ -25,6 +25,13 @@ functions:
 
           export DRIVERS_TOOLS="$(pwd)/../drivers-tools"
           export PROJECT_DIRECTORY="$(pwd)"
+
+          # Python has cygwin path problems on Windows. Detect prospective mongo-orchestration home directory
+          if [ "Windows_NT" = "$OS" ]; then # Magic variable in cygwin
+             export DRIVERS_TOOLS=$(cygpath -m $DRIVERS_TOOLS)
+             export PROJECT_DIRECTORY=$(cygpath -m $PROJECT_DIRECTORY)
+          fi
+
           export MONGO_ORCHESTRATION_HOME="$DRIVERS_TOOLS/.evergreen/orchestration"
           export MONGODB_BINARIES="$DRIVERS_TOOLS/mongodb/bin"
           export UPLOAD_BUCKET="${project}"
@@ -104,6 +111,17 @@ functions:
           for filename in $(find ${DRIVERS_TOOLS} -name \*.json); do
             perl -p -i -e "s|ABSOLUTE_PATH_REPLACEMENT_TOKEN|${DRIVERS_TOOLS}|g" $filename
           done
+  windows fix:
+    - command: shell.exec
+      params:
+        script: |
+          ${PREPARE_SHELL}
+          for i in $(find ${DRIVERS_TOOLS}/.evergreen ${PROJECT_DIRECTORY}/.evergreen -name \*.sh); do
+            cat $i | tr -d '\r' > $i.new
+            mv $i.new $i
+          done
+          # Copy client certificate because symlinks do not work on Windows.
+          cp ${DRIVERS_TOOLS}/.evergreen/x509gen/client.pem ${MONGO_ORCHESTRATION_HOME}/lib/client.pem
   make files executable:
     - command: shell.exec
       params:
@@ -135,6 +153,7 @@ functions:
 pre:
   - func: fetch source
   - func: prepare resources
+  - func: windows fix
   - func: fix absolute paths
   - func: make files executable
 post:
@@ -1196,3 +1215,51 @@ buildvariants:
     expansions:
       NODE_LTS_NAME: argon
     tasks: *ref_5
+  - name: windows-64-vs2010-test-dubnium
+    display_name: Windows (VS2010) Node Dubnium
+    run_on: windows-64-vs2010-test
+    expansions:
+      NODE_LTS_NAME: dubnium
+    tasks: *ref_3
+  - name: windows-64-vs2010-test-carbon
+    display_name: Windows (VS2010) Node Carbon
+    run_on: windows-64-vs2010-test
+    expansions:
+      NODE_LTS_NAME: carbon
+    tasks: *ref_3
+  - name: windows-64-vs2010-test-boron
+    display_name: Windows (VS2010) Node Boron
+    run_on: windows-64-vs2010-test
+    expansions:
+      NODE_LTS_NAME: boron
+    tasks: *ref_3
+  - name: windows-64-vs2010-test-argon
+    display_name: Windows (VS2010) Node Argon
+    run_on: windows-64-vs2010-test
+    expansions:
+      NODE_LTS_NAME: argon
+    tasks: *ref_3
+  - name: windows-64-vs2015-test-dubnium
+    display_name: Windows (VS2015) Node Dubnium
+    run_on: windows-64-vs2015-test
+    expansions:
+      NODE_LTS_NAME: dubnium
+    tasks: *ref_3
+  - name: windows-64-vs2015-test-carbon
+    display_name: Windows (VS2015) Node Carbon
+    run_on: windows-64-vs2015-test
+    expansions:
+      NODE_LTS_NAME: carbon
+    tasks: *ref_3
+  - name: windows-64-vs2015-test-boron
+    display_name: Windows (VS2015) Node Boron
+    run_on: windows-64-vs2015-test
+    expansions:
+      NODE_LTS_NAME: boron
+    tasks: *ref_3
+  - name: windows-64-vs2015-test-argon
+    display_name: Windows (VS2015) Node Argon
+    run_on: windows-64-vs2015-test
+    expansions:
+      NODE_LTS_NAME: argon
+    tasks: *ref_3

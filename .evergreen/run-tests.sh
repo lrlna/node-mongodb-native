@@ -14,11 +14,25 @@ SSL=${SSL:-nossl}
 UNIFIED=${UNIFIED:-}
 MONGODB_URI=${MONGODB_URI:-}
 
+# This loads the `get_distro` function
+. $DRIVERS_TOOLS/download-mongodb.sh
+get_distro
+
+case "$DISTRO" in
+  cygwin*)
+    export NVM_HOME="C:\cygwin\home\Administrator\nvm"
+    export NVM_SYMLINK="C:\cygwin\home\Administrator\nvm\bin"
+    export PATH=$NVM_SYMLINK:$NVM_HOME:$PATH
+    ;;
+
+  *)
+    export PATH="/opt/mongodbtoolchain/v2/bin:$PATH"
+    NODE_ARTIFACTS_PATH="${PROJECT_DIRECTORY}/node-artifacts"
+    export NVM_DIR="${NODE_ARTIFACTS_PATH}/nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    ;;
+esac
+
 # run tests
 echo "Running $AUTH tests over $SSL, connecting to $MONGODB_URI"
-
-export PATH="/opt/mongodbtoolchain/v2/bin:$PATH"
-NODE_ARTIFACTS_PATH="${PROJECT_DIRECTORY}/node-artifacts"
-export NVM_DIR="${NODE_ARTIFACTS_PATH}/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 MONGODB_UNIFIED_TOPOLOGY=${UNIFIED} MONGODB_URI=${MONGODB_URI} npm test

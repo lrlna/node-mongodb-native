@@ -106,8 +106,8 @@ const OPERATING_SYSTEMS = [
     name: 'ubuntu1804-arm64-test',
     display_name: 'Ubuntu 18.04 (ARM64)',
     run_on: 'ubuntu1804-arm64-test',
-    mongoVersion: '>=4.2'
-  }
+    mongoVersion: '>=4.2',
+  },
 
   // reenable when these are actually running 7.2, or we release a 7.4 rpm
   // {
@@ -118,21 +118,16 @@ const OPERATING_SYSTEMS = [
   // },
 
   // Windows. reenable this when nvm supports windows, or we settle on an alternative tool
-  // {
-  //   name: 'windows-64-vs2010-test',
-  //   display_name: 'Windows (VS2010)',
-  //   run_on: 'windows-64-vs2010-test'
-  // },
-  // {
-  //   name: 'windows-64-vs2013-test',
-  //   display_name: 'Windows (VS2013)',
-  //   run_on: 'windows-64-vs2013-test'
-  // },
-  // {
-  //   name: 'windows-64-vs2015-test',
-  //   display_name: 'Windows (VS2015)',
-  //   run_on: 'windows-64-vs2015-test'
-  // }
+  {
+    name: 'windows-64-vs2010-test',
+    display_name: 'Windows (VS2010)',
+    run_on: 'windows-64-vs2010-test'
+  },
+  {
+    name: 'windows-64-vs2015-test',
+    display_name: 'Windows (VS2015)',
+    run_on: 'windows-64-vs2015-test'
+  }
 ].map(osConfig =>
   Object.assign(
     {
